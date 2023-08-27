@@ -1,13 +1,59 @@
 import { closeSignUpModal, openSignUpModal } from "@/redux/modalSlice";
 import Modal from "@mui/material/Modal";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { useEffect, useState } from "react";
+import { auth } from "@/firebase";
+import { setUser } from "@/redux/userSlice";
 
 export default function SignUpModal() {
   const isOpen = useSelector((state) => state.modals.signUpModalOpen);
   // Use action functions from reducer props in modalSlice.js
   // use dispatch hook
   const dispatch = useDispatch();
-  console.log(isOpen);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function handleSignUp() {
+    // import firebase function; import createUserWithEmailAndPassword
+    const userCredentials = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+  }
+
+  useEffect(() => {
+    // Firebase function onAuthStateChange --> Listener to see if user is logged in/out
+    // Checks because if user just created account, we want to log them in; should already be logged in after creating account
+    // function knows whether or not user has signed up & returns currentUser information
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      // if no user signed in, return
+      if (!currentUser) return;
+
+      // if there is a user, take all information and put into redux slice; to access globally
+      // handle redux actions
+      console.log(currentUser);
+      dispatch(
+        setUser({
+          username: currentUser.email.split("@")[0],
+          // since signing up with email & password, display name will not be available
+          // unlike google sign-in, which takes displayname
+          name: null,
+          email: currentUser.email,
+          uid: currentUser.uid,
+          photoUrl: null,
+        })
+      );
+    });
+
+    // turns off listener so that listener does not use additional resources
+    return unsubscribe;
+  }, []);
 
   return (
     <>
@@ -51,16 +97,19 @@ export default function SignUpModal() {
               className="h-10 rounded-md mt-8 bg-transparent border border-gray-700 p-6 focus:outline-none"
               placeholder="Email"
               type={"email"}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <input
               className="h-10 rounded-md mt-8 bg-transparent border border-gray-700 p-6 focus:outline-none"
               placeholder="Password"
               type={"password"}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <button
               className="bg-white text-black w-full font-bold
             text-lg p-2 mt-8 rounded-md
             "
+              onClick={handleSignUp}
             >
               Create account
             </button>
