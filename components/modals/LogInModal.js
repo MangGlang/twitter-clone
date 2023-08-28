@@ -19,6 +19,11 @@ export default function LoginModal() {
     await signInWithEmailAndPassword(auth, email, password)
   }
 
+  // guest123321123@gmail.com
+  async function handleGuestSignIn() {
+    await signInWithEmailAndPassword(auth, "guest123321123@gmail.com", "guest123321123@gmail.com")
+  }
+
   return (
     <>
       <button
@@ -72,6 +77,8 @@ export default function LoginModal() {
               className="bg-white text-black w-full font-bold
             text-lg p-2 rounded-md mt-4
             "
+            // for recruitors to check app
+            onClick={handleGuestSignIn}
             >
               Sign In as Guest
             </button>

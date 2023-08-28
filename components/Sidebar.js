@@ -1,4 +1,5 @@
 import { auth } from "@/firebase";
+import { closeLoginModal, closeSignUpModal } from "@/redux/modalSlice";
 import { signOutUser } from "@/redux/userSlice";
 import {
   HomeIcon,
@@ -26,6 +27,8 @@ export default function Sidebar() {
     await signOut(auth);
     // also sign out user from redux store; need to reset user info
     dispatch(signOutUser());
+    dispatch(closeSignUpModal());
+    dispatch(closeLoginModal());
   }
 
   return (

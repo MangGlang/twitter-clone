@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -41,6 +42,10 @@ export default function SignUpModal() {
     })
 
     router.reload();
+  }
+
+  async function handleGuestSignIn() {
+    await signInWithEmailAndPassword(auth, "guest123321123@gmail.com", "guest123321123@gmail.com")
   }
 
   useEffect(() => {
@@ -97,6 +102,7 @@ export default function SignUpModal() {
               className="bg-white text-black w-full font-bold
             text-lg p-2 rounded-md
             "
+            onClick={handleGuestSignIn}
             >
               Sign In as Guest
             </button>
