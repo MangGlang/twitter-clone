@@ -4,10 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "@/firebase";
 import { setUser } from "@/redux/userSlice";
+import { useRouter } from "next/router";
+
 
 export default function SignUpModal() {
   const isOpen = useSelector((state) => state.modals.signUpModalOpen);
@@ -16,7 +19,10 @@ export default function SignUpModal() {
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter()
 
   async function handleSignUp() {
     // import firebase function; import createUserWithEmailAndPassword
@@ -25,6 +31,16 @@ export default function SignUpModal() {
       email,
       password
     );
+
+    // one user signs up, use update profile function from firebase
+    // updateProfile(x,y) => x = currentUser, y = object with props that u want to change
+    await updateProfile(auth.currentUser, {
+      displayName: name,
+      // randomize PFP of user by rounding up value based on random number from 0 - 6
+      photoURL: `./assets/profilePictures/pfp${Math.ceil(Math.random() * 6)}.png`
+    })
+
+    router.reload();
   }
 
   useEffect(() => {
@@ -43,10 +59,10 @@ export default function SignUpModal() {
           username: currentUser.email.split("@")[0],
           // since signing up with email & password, display name will not be available
           // unlike google sign-in, which takes displayname
-          name: null,
+          name: currentUser.displayName,
           email: currentUser.email,
           uid: currentUser.uid,
-          photoUrl: null,
+          photoUrl: currentUser.photoURL,
         })
       );
     });
@@ -92,6 +108,7 @@ export default function SignUpModal() {
               className="h-10 rounded-md mt-8 bg-transparent border border-gray-700 p-6 focus:outline-none"
               placeholder="Full Name"
               type={"text"}
+              onChange={(e) => setName(e.target.value)}
             />
             <input
               className="h-10 rounded-md mt-8 bg-transparent border border-gray-700 p-6 focus:outline-none"

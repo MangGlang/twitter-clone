@@ -1,5 +1,8 @@
+import { auth } from "@/firebase";
 import { closeLoginModal, openLoginModal } from "@/redux/modalSlice";
 import Modal from "@mui/material/Modal";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function LoginModal() {
@@ -7,7 +10,14 @@ export default function LoginModal() {
   // Use action functions from reducer props in modalSlice.js
   // use dispatch hook
   const dispatch = useDispatch();
-  console.log(isOpen);
+
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  async function handleSignIn() {
+    await signInWithEmailAndPassword(auth, email, password)
+  }
 
   return (
     <>
@@ -17,7 +27,7 @@ export default function LoginModal() {
         "
         onClick={() => dispatch(openLoginModal())}
       >
-        Login
+        Log in
       </button>
 
       {/* Modal requires 2 props: open, and onClose */}
@@ -41,16 +51,19 @@ export default function LoginModal() {
               className="h-10 rounded-md mt-8 bg-transparent border border-gray-700 p-6 focus:outline-none"
               placeholder="Email"
               type={"email"}
+              onChange={e => setEmail(e.target.value)}
             />
             <input
               className="h-10 rounded-md mt-8 bg-transparent border border-gray-700 p-6 focus:outline-none"
               placeholder="Password"
               type={"password"}
+              onChange={e => setPassword(e.target.value)}
             />
             <button
               className="bg-white text-black w-full font-bold
             text-lg p-2 mt-8 rounded-md
             "
+            onClick={handleSignIn}
             >
               Sign In
             </button>
