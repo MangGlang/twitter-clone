@@ -1,14 +1,22 @@
+import { openCommentModal, setCommentTweet } from "@/redux/modalSlice";
 import {
   ChartBarIcon,
   ChatIcon,
   HeartIcon,
   UploadIcon,
 } from "@heroicons/react/outline";
+import { useRouter } from "next/router";
 import Moment from "react-moment";
+import { useDispatch } from "react-redux";
 
-export default function Tweet({ data }) {
+export default function Tweet({ data, id }) {
+  const dispatch = useDispatch();
+  const router = useRouter()
   return (
-    <div className="border-b border-gray-700">
+    <div
+    // pushing id of tweet to route to dynamic page
+     onClick={() => router.push("/" + id)}
+     className="border-b border-gray-700 cursor-pointer">
       <TweetHeader
         username={data?.username}
         name={data?.name}
@@ -20,7 +28,24 @@ export default function Tweet({ data }) {
         photoUrl={data?.photoUrl}
       />
       <div className="p-3 ml-16 text-gray-500 flex space-x-14">
-        <ChatIcon className="w-5 cursor-pointer hover:text-green-400 " />
+        <div
+          onClick={(e) => {
+            // 
+            e.stopPropagation()
+            dispatch(
+              setCommentTweet({
+                id: id,
+                tweet: data?.tweet,
+                photoUrl: data?.photoUrl,
+                name: data?.name,
+                username: data?.username,
+              })
+            );
+            dispatch(openCommentModal());
+          }}
+        >
+          <ChatIcon className="w-5 cursor-pointer hover:text-green-400 " />
+        </div>
         <HeartIcon className="w-5 cursor-pointer hover:text-pink-400 " />
         <ChartBarIcon className="w-5 cursor-not-allowed" />
         <UploadIcon className="w-5 cursor-not-allowed" />

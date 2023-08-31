@@ -7,6 +7,7 @@ import Postfeed from "@/components/Postfeed";
 import Trending from "@/components/Trending";
 import BottomBanner from "@/components/BottomBanner";
 import { useSelector } from "react-redux";
+import CommentModal from "@/components/modals/CommentModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,8 @@ export default function Home() {
         <Postfeed />
         <Trending />
       </div>
+
+      <CommentModal />
 
       {/* if username is not obtained from slicing the string before the @ at "minhleenl@" display banner */}
       {/* in other words, if username is not set yet, display banner */}
